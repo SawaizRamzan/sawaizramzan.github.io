@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Vokabelkarten · German A1</title>
+<title>Vokabelkarten &middot; German A1</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -14,6 +14,7 @@
 <style>
   :root{
     --paper:#EEF0F3; --ink:#16181D; --edge:#D6D8DC; --dim:#6B7280;
+    --flag:#B4801C; --flagf:#FBEFD6; --flage:#E3BC72;
     --der-f:#DCE8F7; --der-e:#7FA5CE; --der-i:#1F4E7A; --der-g:#B7D0E9;
     --das-f:#DCEDE0; --das-e:#82B392; --das-i:#245C3B; --das-g:#B5D8C0;
     --die-f:#F8DEE7; --die-e:#D896AE; --die-i:#8C2F51; --die-g:#EFC1D2;
@@ -32,9 +33,20 @@
   .eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.2em;color:var(--dim)}
   button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;
          touch-action:manipulation;-webkit-appearance:none}
+  .hide{display:none !important}
 
-  header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px}
+  header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px}
   h1{margin:4px 0 0;font-size:23px;font-weight:600;letter-spacing:-.02em}
+
+  /* tabs */
+  .tabs{display:flex;gap:4px;background:#E2E5EA;border-radius:11px;padding:4px;margin-bottom:12px}
+  .tab{flex:1;border-radius:8px;padding:9px 0;font-size:14px;font-weight:600;text-align:center;
+       color:#4B5563}
+  .tab[aria-selected="true"]{background:#fff;color:var(--ink);
+       box-shadow:0 1px 2px rgba(0,0,0,.08)}
+  .badge{display:inline-block;min-width:18px;margin-left:5px;padding:1px 5px;border-radius:99px;
+         background:var(--flage);color:#4A3208;font-size:11px;font-weight:700;
+         font-family:ui-monospace,Menlo,monospace}
 
   .row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
   .deck{border:1px solid var(--edge);background:#fff;border-radius:10px;
@@ -64,7 +76,7 @@
   .count{font-size:10px;color:#4B5563;font-variant-numeric:tabular-nums}
 
   .stage{perspective:1400px}
-  .plate{position:relative;width:100%;height:clamp(320px,48vh,400px);
+  .plate{position:relative;width:100%;height:clamp(320px,47vh,400px);
          -webkit-transform-style:preserve-3d;transform-style:preserve-3d;
          -webkit-transition:-webkit-transform .5s cubic-bezier(.2,.8,.2,1);
          transition:transform .5s cubic-bezier(.2,.8,.2,1)}
@@ -75,13 +87,14 @@
         -webkit-transform:translateZ(1px);transform:translateZ(1px)}
   .face.back{-webkit-transform:rotateY(180deg) translateZ(1px);
              transform:rotateY(180deg) translateZ(1px)}
-  .fhead{display:flex;justify-content:space-between;padding:12px 14px 0}
+  .fhead{display:flex;justify-content:space-between;gap:8px;padding:12px 14px 0}
   .fbody{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;
          padding:8px 20px;overflow-y:auto;-webkit-overflow-scrolling:touch}
   .fbody.left{align-items:stretch;flex-direction:column;justify-content:center;
               gap:11px;padding:8px 18px}
   .ffoot{border-top:1px solid #EDEEF0;padding:11px;text-align:center}
   .word{text-align:center;font-weight:600;line-height:1.05;letter-spacing:-.02em}
+  .star{color:var(--flag)}
 
   .ghost{position:absolute;right:-16px;bottom:-52px;font-weight:600;font-size:250px;
          line-height:.75;letter-spacing:-.06em;pointer-events:none;user-select:none;
@@ -93,13 +106,18 @@
   .ex{background:rgba(255,255,255,.62);border-radius:7px;padding:10px 12px;
       font-size:15px;font-style:italic;line-height:1.35}
 
-  .acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-  .act{border-radius:10px;padding:14px 0;font-size:15px;font-weight:600;text-align:center}
-  .again{border:1px solid #9CA3AF;background:#fff}
-  .again:active{background:#F3F4F6}
+  .acts{display:grid;grid-template-columns:0.8fr 1fr 1.1fr;gap:7px;margin-top:10px}
+  .act{border-radius:10px;padding:13px 0;font-size:14px;font-weight:600;text-align:center;
+       line-height:1.15}
+  .back{border:1px solid #B4B8BF;background:#fff;color:#4B5563}
+  .back:active{background:#F3F4F6}
+  .back[disabled]{opacity:.35;pointer-events:none}
+  .mark{border:1px solid var(--flage);background:var(--flagf);color:#7A5410}
+  .mark:active{filter:brightness(.96)}
+  .mark[aria-pressed="true"]{background:var(--flag);border-color:var(--flag);color:#fff}
   .got{background:var(--ink);color:#fff}
   .got:active{background:#374151}
-  .act i{font-style:normal;font-size:10px;opacity:.45;margin-left:6px;
+  .act i{font-style:normal;font-size:10px;opacity:.5;margin-left:5px;
          font-family:ui-monospace,Menlo,monospace}
 
   .foot{display:flex;align-items:center;justify-content:space-between;margin-top:9px}
@@ -109,12 +127,29 @@
          text-decoration:underline;text-underline-offset:4px}
 
   .done{border:1px solid var(--edge);background:#fff;border-radius:12px;
-        padding:52px 22px;text-align:center;display:none}
+        padding:46px 22px;text-align:center}
   .done p{margin:12px auto 0;max-width:20em;font-size:18px;font-weight:600;line-height:1.35}
-  .done .dacts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:22px}
-  .done button{border-radius:10px;padding:11px 16px;font-size:14px;font-weight:600}
+  .dacts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:22px}
+  .done button,.rbtn{border-radius:10px;padding:11px 16px;font-size:14px;font-weight:600}
   .primary{background:var(--ink);color:#fff}
   .ghostbtn{border:1px solid var(--edge);background:#fff}
+
+  /* review list */
+  .rhead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+  .rgroup{margin-bottom:16px}
+  .rgroup h3{margin:0 0 6px;font-size:10px;text-transform:uppercase;letter-spacing:.18em;
+             color:var(--dim);font-weight:600}
+  .ritem{display:flex;align-items:center;gap:10px;border:1px solid var(--edge);background:#fff;
+         border-radius:9px;padding:10px 12px;margin-bottom:6px;border-left-width:4px}
+  .ritem .txt{flex:1;min-width:0}
+  .ritem b{display:block;font-size:15px;font-weight:600}
+  .ritem span{display:block;font-size:13px;color:#4B5563;margin-top:1px}
+  .unflag{flex:0 0 auto;width:30px;height:30px;border-radius:8px;border:1px solid var(--edge);
+          background:#fff;font-size:15px;color:#6B7280;line-height:1}
+  .unflag:active{background:#F3F4F6}
+  .empty{border:1px dashed #C3C7CD;border-radius:12px;padding:44px 20px;text-align:center;
+         color:var(--dim)}
+  .empty p{margin:10px auto 0;max-width:24em;font-size:15px;line-height:1.5}
 
   .legend{border:1px solid var(--edge);background:#fff;border-radius:10px;
           padding:12px 14px;margin-top:26px}
@@ -138,6 +173,11 @@
     <div class="eyebrow mono" id="tot"></div>
   </header>
 
+  <div class="tabs" role="tablist">
+    <button class="tab" id="tabStudy" role="tab" aria-selected="true" onclick="setView('study')">Study</button>
+    <button class="tab" id="tabRev" role="tab" aria-selected="false" onclick="setView('review')">Review<span class="badge hide" id="revBadge">0</span></button>
+  </div>
+
   <div class="row">
     <button class="deck" id="d1" onclick="setDeck('de2en')" aria-pressed="true">
       <b>Deutsch</b><span class="mono">&rarr; English</span></button>
@@ -145,66 +185,118 @@
       <b>English</b><span class="mono">&rarr; Deutsch</span></button>
   </div>
 
-  <div class="panel">
-    <button id="catBtn" onclick="toggleCats()">
-      <span><span class="eyebrow mono">Kategorie</span><b id="catName"></b></span>
-      <span class="mono" style="font-size:12px;color:#6B7280"><span id="catN"></span> <span id="caret">&#9660;</span></span>
-    </button>
-    <div id="catList"></div>
-  </div>
+  <!-- ============ STUDY ============ -->
+  <div id="vStudy">
+    <div class="panel">
+      <button id="catBtn" onclick="toggleCats()">
+        <span><span class="eyebrow mono">Kategorie</span><b id="catName"></b></span>
+        <span class="mono" style="font-size:12px;color:#6B7280"><span id="catN"></span> <span id="caret">&#9660;</span></span>
+      </button>
+      <div id="catList"></div>
+    </div>
 
-  <div class="bar">
-    <div class="track"><div class="fill" id="fill"></div></div>
-    <div class="count mono" id="cnt"></div>
-  </div>
+    <div class="bar">
+      <div class="track"><div class="fill" id="fill"></div></div>
+      <div class="count mono" id="cnt"></div>
+    </div>
 
-  <div id="live">
-    <div class="stage">
-      <div class="plate" id="plate" role="button" tabindex="0" aria-label="Flip card">
-        <div class="face front">
-          <div class="fhead">
-            <span class="eyebrow mono" id="fLang"></span>
-            <span class="eyebrow mono" id="fLeft"></span>
-          </div>
-          <div class="fbody"><div class="word" id="fWord"></div></div>
-          <div class="ffoot"><span class="eyebrow mono">Tap to reveal</span></div>
-        </div>
-        <div class="face back" id="back">
-          <div class="ghost" id="ghost" aria-hidden="true"></div>
-          <div class="fhead">
-            <span class="eyebrow mono" id="bGen"></span>
-            <span class="eyebrow mono" id="bCat"></span>
-          </div>
-          <div class="fbody left">
-            <div>
-              <div class="head" id="bWord"></div>
-              <div class="gloss" id="bGloss"></div>
+    <div id="live">
+      <div class="stage">
+        <div class="plate" id="plate" role="button" tabindex="0" aria-label="Flip card">
+          <div class="face front">
+            <div class="fhead">
+              <span class="eyebrow mono" id="fLang"></span>
+              <span class="eyebrow mono" id="fLeft"></span>
             </div>
-            <div class="data mono" id="bData"></div>
-            <div class="ex" id="bEx"></div>
+            <div class="fbody"><div class="word" id="fWord"></div></div>
+            <div class="ffoot"><span class="eyebrow mono">Tap to reveal</span></div>
           </div>
-          <div class="ffoot" id="bFoot"><span class="eyebrow mono">Tap to hide</span></div>
+          <div class="face back" id="back">
+            <div class="ghost" id="ghost" aria-hidden="true"></div>
+            <div class="fhead">
+              <span class="eyebrow mono" id="bGen"></span>
+              <span class="eyebrow mono" id="bCat"></span>
+            </div>
+            <div class="fbody left">
+              <div>
+                <div class="head" id="bWord"></div>
+                <div class="gloss" id="bGloss"></div>
+              </div>
+              <div class="data mono" id="bData"></div>
+              <div class="ex" id="bEx"></div>
+            </div>
+            <div class="ffoot" id="bFoot"><span class="eyebrow mono">Tap to hide</span></div>
+          </div>
         </div>
+      </div>
+
+      <div class="acts">
+        <button class="act back" id="btnBack" onclick="goBack()">Back<i>&larr;</i></button>
+        <button class="act mark" id="btnMark" onclick="toggleMark()" aria-pressed="false">Review</button>
+        <button class="act got" onclick="gotIt()">Got it<i>&rarr;</i></button>
+      </div>
+
+      <div class="foot">
+        <label class="chk"><input type="checkbox" id="shuf" onchange="setShuffle(this.checked)">Shuffle</label>
+        <button class="reset mono" onclick="restart()">Start over</button>
       </div>
     </div>
 
-    <div class="acts">
-      <button class="act again" onclick="again()">Again<i>&larr;</i></button>
-      <button class="act got" onclick="gotIt()">Got it<i>&rarr;</i></button>
-    </div>
-
-    <div class="foot">
-      <label class="chk"><input type="checkbox" id="shuf" onchange="setShuffle(this.checked)">Shuffle</label>
-      <button class="reset mono" onclick="restart()">Start over</button>
+    <div class="done hide" id="done">
+      <div class="eyebrow mono">Durchgang fertig</div>
+      <p id="doneMsg"></p>
+      <div class="dacts">
+        <button class="primary" onclick="restart()">Run it again</button>
+        <button class="ghostbtn" onclick="nextCat()">Next category</button>
+      </div>
     </div>
   </div>
 
-  <div class="done" id="done">
-    <div class="eyebrow mono">Durchgang fertig</div>
-    <p id="doneMsg"></p>
-    <div class="dacts">
-      <button class="primary" onclick="restart()">Run it again</button>
-      <button class="ghostbtn" onclick="nextCat()">Next category</button>
+  <!-- ============ REVIEW ============ -->
+  <div id="vReview" class="hide">
+    <div id="revList"></div>
+    <div id="revSession" class="hide">
+      <div class="bar">
+        <div class="track"><div class="fill" id="rfill"></div></div>
+        <div class="count mono" id="rcnt"></div>
+      </div>
+      <div class="stage">
+        <div class="plate" id="rplate" role="button" tabindex="0" aria-label="Flip card">
+          <div class="face front">
+            <div class="fhead">
+              <span class="eyebrow mono" id="rfLang"></span>
+              <span class="eyebrow mono" id="rfLeft"></span>
+            </div>
+            <div class="fbody"><div class="word" id="rfWord"></div></div>
+            <div class="ffoot"><span class="eyebrow mono">Tap to reveal</span></div>
+          </div>
+          <div class="face back" id="rback">
+            <div class="ghost" id="rghost" aria-hidden="true"></div>
+            <div class="fhead">
+              <span class="eyebrow mono" id="rbGen"></span>
+              <span class="eyebrow mono" id="rbCat"></span>
+            </div>
+            <div class="fbody left">
+              <div>
+                <div class="head" id="rbWord"></div>
+                <div class="gloss" id="rbGloss"></div>
+              </div>
+              <div class="data mono" id="rbData"></div>
+              <div class="ex" id="rbEx"></div>
+            </div>
+            <div class="ffoot" id="rbFoot"><span class="eyebrow mono">Tap to hide</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="acts">
+        <button class="act back" id="rBtnBack" onclick="rGoBack()">Back<i>&larr;</i></button>
+        <button class="act mark" onclick="rKeep()">Keep flagged</button>
+        <button class="act got" onclick="rClear()">Got it<i>&rarr;</i></button>
+      </div>
+      <div class="foot">
+        <span class="eyebrow mono">&ldquo;Got it&rdquo; removes the flag</span>
+        <button class="reset mono" onclick="endRevSession()">Back to list</button>
+      </div>
     </div>
   </div>
 
@@ -216,9 +308,10 @@
       <div class="key"><span class="sw" style="background:var(--die-f);border-color:var(--die-e)"></span><span><b>die</b> <span style="color:#6B7280">feminine</span></span></div>
       <div class="key"><span class="sw" style="background:#fff;border-color:#D6D8DC"></span><span style="color:#6B7280">not a noun</span></div>
     </div>
-    <p class="note mono">Tap the card to flip &middot; progress saves automatically &middot;
-      sorted A&ndash;Z per category, ignoring der/das/die.
-      With a keyboard: Space flips, &rarr; Got it, &larr; Again.</p>
+    <p class="note mono">Back steps to the exact card you just left and undoes it &middot;
+      Review flags a card without losing your place &middot; the two decks and their
+      review lists are tracked separately &middot; progress saves automatically.
+      With a keyboard: Space flips, &rarr; Got it, &larr; Back, R flags.</p>
     <div id="warn">Progress can&rsquo;t be saved in this mode. Open the file from a
       home&nbsp;screen icon or a web address instead of a preview window.</div>
   </div>
@@ -236,193 +329,347 @@ var G = {
   non:{f:"#FFFFFF",e:"#D6D8DC",i:"#16181D",g:"#EDEEF0",l:"not a noun"}
 };
 function gen(a){ return G[a] || G.non; }
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function show(el,on){ if(on) el.classList.remove("hide"); else el.classList.add("hide"); }
 
-/* ---- storage: degrade to memory if unavailable (e.g. file:// sandbox) ---- */
-var KEY = "vk.a1.v1", mem = {}, canStore = false;
-try {
-  localStorage.setItem(KEY+".t","1"); localStorage.removeItem(KEY+".t"); canStore = true;
-} catch(e){ canStore = false; }
-function load(){
-  if(!canStore) return mem;
-  try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e){ return {}; }
+/* ---- storage ---- */
+var KEY = "vk.a1.v2", mem = {}, canStore = false;
+try { localStorage.setItem(KEY+".t","1"); localStorage.removeItem(KEY+".t"); canStore = true; }
+catch(e){ canStore = false; }
+function save(){
+  if(!canStore){ mem = S; return; }
+  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){}
 }
-function save(o){
-  if(!canStore){ mem = o; return; }
-  try { localStorage.setItem(KEY, JSON.stringify(o)); } catch(e){}
-}
-var S = load();
-if(!S.learned) S.learned = {};
+var S;
+try { S = canStore ? (JSON.parse(localStorage.getItem(KEY)) || {}) : {}; } catch(e){ S = {}; }
+if(!S.learned) S.learned = {};   /* "deck|cat" -> [word]        */
+if(!S.review)  S.review  = {};   /* "deck"     -> ["cat::word"] */
 if(!S.deck) S.deck = "de2en";
-if(!S.cat) S.cat = CATS[0].id;
+if(!S.cat)  S.cat  = CATS[0].id;
 if(typeof S.shuffle !== "boolean") S.shuffle = false;
 
-var deck = S.deck, cat = S.cat, shuffle = S.shuffle;
-var cards = [], queue = [], flipped = false;
+var deck = S.deck, cat = S.cat, shuffle = S.shuffle, view = "study";
+var cards = [], queue = [], hist = [], flipped = false;
+var rQueue = [], rHist = [], rFlipped = false, rTotal = 0, inRev = false;
+
+/* ---- keys ---- */
+function slot(){ return deck + "|" + cat; }
+function rk(c){ return c.c + "::" + c.w; }
+function arr(o,k){ if(!o[k]) o[k] = []; return o[k]; }
+
+function isLearned(c){ return arr(S.learned, slot()).indexOf(c.w) >= 0; }
+function setLearned(c,on){
+  var a = arr(S.learned, slot()), i = a.indexOf(c.w);
+  if(on && i < 0) a.push(c.w);
+  if(!on && i >= 0) a.splice(i,1);
+  save();
+}
+function isFlagged(c){ return arr(S.review, deck).indexOf(rk(c)) >= 0; }
+function setFlagged(c,on){
+  var a = arr(S.review, deck), i = a.indexOf(rk(c));
+  if(on && i < 0) a.push(rk(c));
+  if(!on && i >= 0) a.splice(i,1);
+  save();
+}
+function flaggedCards(){
+  var set = {}, a = arr(S.review, deck);
+  for(var i=0;i<a.length;i++) set[a[i]] = 1;
+  return DATA.filter(function(d){ return set[rk(d)]; });
+}
 
 function fold(s){
-  return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"")
-          .replace(/\u00df/g,"ss").toLowerCase();
+  return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\u00df/g,"ss").toLowerCase();
 }
 function catLabel(id){
   for(var i=0;i<CATS.length;i++) if(CATS[i].id===id) return CATS[i].label;
   return "";
 }
-function slot(){ return deck+"|"+cat; }
-function learnedSet(){
-  var a = S.learned[slot()] || [];
-  var o = {}; for(var i=0;i<a.length;i++) o[a[i]] = 1; return o;
+function shuf(a){
+  for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t; }
+  return a;
 }
-function markLearned(w){
-  var k = slot(); if(!S.learned[k]) S.learned[k] = [];
-  if(S.learned[k].indexOf(w) < 0) S.learned[k].push(w);
-  save(S);
-}
-function clearLearned(){ S.learned[slot()] = []; save(S); }
 
+/* ---- build ---- */
 function buildCards(){
   cards = DATA.filter(function(d){ return d.c === cat; });
   cards.sort(function(a,b){ return fold(a.w).localeCompare(fold(b.w),"de"); });
 }
 function buildQueue(fresh){
-  var done = fresh ? {} : learnedSet();
-  queue = cards.filter(function(c){ return !done[c.w]; });
-  if(shuffle){
-    for(var i=queue.length-1;i>0;i--){
-      var j = Math.floor(Math.random()*(i+1)), t = queue[i];
-      queue[i] = queue[j]; queue[j] = t;
-    }
-  }
-  flipped = false;
+  queue = cards.filter(function(c){
+    return fresh ? !isFlagged(c) : (!isLearned(c) && !isFlagged(c));
+  });
+  if(shuffle) shuf(queue);
+  hist = []; flipped = false;
 }
 
-function setDeck(d){ deck = S.deck = d; save(S); buildQueue(false); render(); }
-function setShuffle(v){ shuffle = S.shuffle = v; save(S); buildQueue(false); render(); }
-function setCat(c){
-  cat = S.cat = c; save(S);
-  document.getElementById("catList").classList.remove("open");
-  document.getElementById("caret").innerHTML = "&#9660;";
-  buildCards(); buildQueue(false); render();
+/* ---- study actions ---- */
+function gotIt(){
+  if(!queue.length) return;
+  var c = queue.shift();
+  setLearned(c, true);
+  hist.push({ c:c, a:"got", flag:isFlagged(c) });
+  flipped = false; render();
 }
-function toggleCats(){
-  var l = document.getElementById("catList");
-  l.classList.toggle("open");
-  document.getElementById("caret").innerHTML = l.classList.contains("open") ? "&#9650;" : "&#9660;";
+/* Toggle the flag on the CURRENT card and move on. Toggling off just unflags,
+   keeping you on the same card. */
+function toggleMark(){
+  if(!queue.length) return;
+  var c = queue[0];
+  if(isFlagged(c)){ setFlagged(c,false); render(); return; }
+  setFlagged(c, true);
+  queue.shift();
+  hist.push({ c:c, a:"mark", flag:false });
+  flipped = false; render();
 }
-function restart(){ clearLearned(); buildQueue(true); render(); }
+/* Step back to the exact card you just left, and undo what you did to it. */
+function goBack(){
+  if(!hist.length) return;
+  var h = hist.pop();
+  if(h.a === "got") setLearned(h.c, false);
+  if(h.a === "mark") setFlagged(h.c, h.flag);
+  queue.unshift(h.c);
+  flipped = false; render();
+}
+function restart(){
+  S.learned[slot()] = []; save();
+  buildCards(); buildQueue(true); render();
+}
 function nextCat(){
   var i = 0;
   for(var k=0;k<CATS.length;k++) if(CATS[k].id===cat) i = k;
   setCat(CATS[(i+1) % CATS.length].id);
   window.scrollTo(0,0);
 }
-function flip(){ flipped = !flipped; paintPlate(); }
-function gotIt(){
-  if(!queue.length) return;
-  markLearned(queue[0].w); queue.shift(); flipped = false; render();
+
+/* ---- review session actions ---- */
+function startRevSession(){
+  rQueue = flaggedCards();
+  if(shuffle) shuf(rQueue);
+  rTotal = rQueue.length; rHist = []; rFlipped = false; inRev = true;
+  render(); window.scrollTo(0,0);
 }
-function again(){
-  if(queue.length > 1){ queue.push(queue.shift()); }
-  flipped = false; render();
+function endRevSession(){ inRev = false; render(); window.scrollTo(0,0); }
+function rClear(){                       /* Got it -> drop the flag */
+  if(!rQueue.length) return;
+  var c = rQueue.shift();
+  setFlagged(c, false);
+  rHist.push({ c:c, cleared:true });
+  rFlipped = false; render();
+}
+function rKeep(){                        /* stay flagged, move on */
+  if(!rQueue.length) return;
+  var c = rQueue.shift();
+  rHist.push({ c:c, cleared:false });
+  rFlipped = false; render();
+}
+function rGoBack(){
+  if(!rHist.length) return;
+  var h = rHist.pop();
+  if(h.cleared) setFlagged(h.c, true);
+  rQueue.unshift(h.c);
+  rFlipped = false; render();
+}
+function unflagFromList(key){
+  var a = arr(S.review, deck), i = a.indexOf(key);
+  if(i >= 0) a.splice(i,1);
+  save(); render();
+}
+function clearAllFlags(){
+  if(!confirm("Remove every flag in this deck?")) return;
+  S.review[deck] = []; save(); inRev = false; render();
 }
 
-function catListHTML(){
-  var h = "";
-  for(var i=0;i<CATS.length;i++){
-    var c = CATS[i];
-    var n = DATA.filter(function(d){ return d.c === c.id; }).length;
-    h += '<button class="cat" aria-current="'+(c.id===cat)+'" onclick="setCat(\''+c.id+'\')">'
-       + '<span>'+c.label+'</span><i>'+n+'</i></button>';
-  }
-  return h;
+/* ---- nav ---- */
+function setView(v){
+  view = v;
+  if(v === "study") inRev = false;
+  render(); window.scrollTo(0,0);
+}
+function setDeck(d){
+  deck = S.deck = d; save();
+  buildCards(); buildQueue(false); inRev = false; render();
+}
+function setShuffle(v){
+  shuffle = S.shuffle = v; save();
+  buildQueue(false); render();
+}
+function setCat(c){
+  cat = S.cat = c; save();
+  $("catList").classList.remove("open");
+  $("caret").innerHTML = "&#9660;";
+  buildCards(); buildQueue(false); render();
+}
+function toggleCats(){
+  var l = $("catList");
+  l.classList.toggle("open");
+  $("caret").innerHTML = l.classList.contains("open") ? "&#9650;" : "&#9660;";
 }
 
-function paintPlate(){
-  var p = document.getElementById("plate");
-  if(flipped) p.classList.add("turned"); else p.classList.remove("turned");
-}
-
-function render(){
-  var total = cards.length, left = queue.length, learned = total - left;
-  document.getElementById("tot").textContent = DATA.length + " Karten";
-  document.getElementById("catName").textContent = catLabel(cat);
-  document.getElementById("catN").textContent = total;
-  document.getElementById("cnt").textContent = learned + "/" + total + " gelernt";
-  document.getElementById("fill").style.width = total ? (learned/total*100)+"%" : "0%";
-  document.getElementById("d1").setAttribute("aria-pressed", deck==="de2en");
-  document.getElementById("d2").setAttribute("aria-pressed", deck==="en2de");
-  document.getElementById("shuf").checked = shuffle;
-  document.getElementById("warn").style.display = canStore ? "none" : "block";
-
-  var lst = document.getElementById("catList");
-  if(lst.dataset.cat !== cat){ lst.innerHTML = catListHTML(); lst.dataset.cat = cat; }
-
-  var isDone = total > 0 && left === 0;
-  document.getElementById("live").style.display = isDone ? "none" : "block";
-  document.getElementById("done").style.display = isDone ? "block" : "none";
-  if(isDone){
-    document.getElementById("doneMsg").textContent =
-      "All " + total + " cards in " + catLabel(cat) + " are done.";
-    return;
-  }
-
-  var c = queue[0], gm = gen(c.a);
-  var deDeck = (deck === "de2en");
+/* ---- painting ---- */
+function paintFace(p, c, left, flip){
+  var gm = gen(c.a), deDeck = (deck === "de2en");
   var front = deDeck ? c.w : c.e;
+  var star = isFlagged(c) ? ' <span class="star">&#9733;</span>' : "";
 
-  document.getElementById("fLang").textContent = deDeck ? "Deutsch" : "English";
-  document.getElementById("fLeft").textContent = left + " \u00fcbrig";
-  var fw = document.getElementById("fWord");
+  $(p+"fLang").innerHTML = (deDeck ? "Deutsch" : "English") + star;
+  $(p+"fLeft").textContent = left + " \u00fcbrig";
+  var fw = $(p+"fWord");
   fw.textContent = front;
-  fw.style.fontSize = (front.length > 18 ? 30 : front.length > 12 ? 38 : front.length > 8 ? 46 : 54) + "px";
+  fw.style.fontSize = (front.length>18?30:front.length>12?38:front.length>8?46:54)+"px";
 
-  var bk = document.getElementById("back");
+  var bk = $(p === "" ? "back" : "rback");
   bk.style.background = gm.f; bk.style.borderColor = gm.e; bk.style.color = gm.i;
-  document.getElementById("bFoot").style.borderTopColor = gm.e;
+  $(p+"bFoot").style.borderTopColor = gm.e;
 
-  var gh = document.getElementById("ghost");
+  var gh = $(p+"ghost");
   gh.textContent = c.a ? c.a.charAt(0) : "";
   gh.style.color = gm.g;
 
-  document.getElementById("bGen").textContent = c.a ? (c.a + " \u00b7 " + gm.l) : gm.l;
-  document.getElementById("bCat").textContent = catLabel(cat);
+  $(p+"bGen").innerHTML = (c.a ? esc(c.a)+" \u00b7 "+gm.l : gm.l) + star;
+  $(p+"bCat").textContent = catLabel(c.c);
 
-  var bw = document.getElementById("bWord");
-  bw.innerHTML = (c.a ? "<em>"+c.a+"</em> " : "") + esc(c.w);
-  bw.style.fontSize = (c.w.length > 15 ? 27 : c.w.length > 11 ? 33 : 39) + "px";
-
-  document.getElementById("bGloss").textContent = c.e;
+  var bw = $(p+"bWord");
+  bw.innerHTML = (c.a ? "<em>"+esc(c.a)+"</em> " : "") + esc(c.w);
+  bw.style.fontSize = (c.w.length>15?27:c.w.length>11?33:39)+"px";
+  $(p+"bGloss").textContent = c.e;
 
   var d = [];
-  if(c.a){
-    d.push("Plural: " + (c.p === "nur Plural" ? "nur Plural"
-                        : c.p ? "die " + c.p : "kein Plural"));
-  }
+  if(c.a) d.push("Plural: " + (c.p==="nur Plural" ? "nur Plural" : c.p ? "die "+c.p : "kein Plural"));
   if(c.f) d.push(c.f);
-  var dd = document.getElementById("bData");
+  var dd = $(p+"bData");
   dd.innerHTML = d.map(function(x){ return "<div>"+esc(x)+"</div>"; }).join("");
   dd.style.display = d.length ? "block" : "none";
   dd.style.borderLeftColor = gm.e;
 
-  var ex = document.getElementById("bEx");
+  var ex = $(p+"bEx");
   if(!deDeck && c.s){ ex.textContent = c.s; ex.style.display = "block"; }
-  else { ex.style.display = "none"; }
+  else ex.style.display = "none";
 
-  paintPlate();
+  var pl = $(p === "" ? "plate" : "rplate");
+  if(flip) pl.classList.add("turned"); else pl.classList.remove("turned");
 }
 
-function esc(s){
-  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+function revListHTML(){
+  var list = flaggedCards();
+  if(!list.length){
+    return '<div class="empty"><div class="eyebrow mono">Nothing flagged</div>'
+         + '<p>While studying, tap <b>Review</b> on any card you want to come back to. '
+         + 'Flagged cards collect here \u2014 separately for each deck direction.</p></div>';
+  }
+  var h = '<div class="rhead"><div><div class="eyebrow mono">'
+        + (deck==="de2en" ? "Deutsch &rarr; English" : "English &rarr; Deutsch")
+        + '</div><div style="font-size:15px;font-weight:600;margin-top:2px">'
+        + list.length + (list.length===1 ? " card flagged" : " cards flagged")
+        + '</div></div><button class="rbtn primary" onclick="startRevSession()">Study these</button></div>';
+
+  for(var i=0;i<CATS.length;i++){
+    var cid = CATS[i].id;
+    var grp = list.filter(function(x){ return x.c === cid; });
+    if(!grp.length) continue;
+    grp.sort(function(a,b){ return fold(a.w).localeCompare(fold(b.w),"de"); });
+    h += '<div class="rgroup"><h3>'+CATS[i].label+'</h3>';
+    for(var j=0;j<grp.length;j++){
+      var c = grp[j], gm = gen(c.a);
+      h += '<div class="ritem" style="border-left-color:'+gm.e+'">'
+         + '<div class="txt"><b>'+(c.a?'<span style="opacity:.5;font-weight:500">'+c.a+'</span> ':'')
+         + esc(c.w)+'</b><span>'+esc(c.e)+'</span></div>'
+         + '<button class="unflag" aria-label="Remove flag" onclick="unflagFromList(\''
+         + rk(c).replace(/'/g,"\\'") + '\')">&times;</button></div>';
+    }
+    h += '</div>';
+  }
+  h += '<div class="dacts" style="justify-content:flex-start;margin-top:4px">'
+     + '<button class="ghostbtn rbtn" onclick="clearAllFlags()">Clear all flags</button></div>';
+  return h;
 }
 
-document.getElementById("plate").addEventListener("click", flip);
-document.getElementById("plate").addEventListener("keydown", function(e){
-  if(e.key === " " || e.key === "Enter"){ e.preventDefault(); flip(); }
-});
+function render(){
+  var nFlag = arr(S.review, deck).length;
+  $("tot").textContent = DATA.length + " Karten";
+  $("d1").setAttribute("aria-pressed", deck === "de2en");
+  $("d2").setAttribute("aria-pressed", deck === "en2de");
+  $("tabStudy").setAttribute("aria-selected", view === "study");
+  $("tabRev").setAttribute("aria-selected", view === "review");
+  var bdg = $("revBadge");
+  bdg.textContent = nFlag; show(bdg, nFlag > 0);
+  show($("vStudy"), view === "study");
+  show($("vReview"), view === "review");
+  $("warn").style.display = canStore ? "none" : "block";
+
+  if(view === "review"){
+    show($("revList"), !inRev);
+    show($("revSession"), inRev);
+    if(!inRev){ $("revList").innerHTML = revListHTML(); return; }
+    if(!rQueue.length){
+      $("revList").innerHTML =
+        '<div class="empty"><div class="eyebrow mono">Review done</div>'
+        + '<p>You went through all ' + rTotal + '. '
+        + arr(S.review, deck).length + ' still flagged.</p>'
+        + '<div class="dacts"><button class="primary rbtn" onclick="endRevSession()">Back to list</button></div></div>';
+      show($("revList"), true); show($("revSession"), false); return;
+    }
+    var done = rTotal - rQueue.length;
+    $("rfill").style.width = rTotal ? (done/rTotal*100)+"%" : "0%";
+    $("rcnt").textContent = done + "/" + rTotal + " durch";
+    $("rBtnBack").disabled = !rHist.length;
+    paintFace("r", rQueue[0], rQueue.length, rFlipped);
+    return;
+  }
+
+  /* study view */
+  $("catName").textContent = catLabel(cat);
+  $("catN").textContent = cards.length;
+  var lst = $("catList");
+  if(lst.dataset.key !== cat + "|" + deck){
+    var h = "";
+    for(var i=0;i<CATS.length;i++){
+      var c = CATS[i];
+      var n = DATA.filter(function(d){ return d.c === c.id; }).length;
+      h += '<button class="cat" aria-current="'+(c.id===cat)+'" onclick="setCat(\''+c.id+'\')">'
+         + '<span>'+c.label+'</span><i>'+n+'</i></button>';
+    }
+    lst.innerHTML = h; lst.dataset.key = cat + "|" + deck;
+  }
+
+  var total = cards.length;
+  var nFlagCat = cards.filter(isFlagged).length;
+  var pool = total - nFlagCat;
+  var learned = pool - queue.length;
+  $("fill").style.width = pool ? (learned/pool*100)+"%" : "0%";
+  $("cnt").textContent = learned + "/" + pool + " gelernt"
+                       + (nFlagCat ? " \u00b7 " + nFlagCat + " markiert" : "");
+  $("shuf").checked = shuffle;
+
+  var isDone = queue.length === 0;
+  show($("live"), !isDone);
+  show($("done"), isDone);
+  if(isDone){
+    $("doneMsg").textContent = pool === 0
+      ? "Every card in " + catLabel(cat) + " is flagged for review."
+      : "All " + pool + " cards in " + catLabel(cat) + " are done.";
+    return;
+  }
+
+  $("btnBack").disabled = !hist.length;
+  $("btnMark").setAttribute("aria-pressed", isFlagged(queue[0]));
+  $("btnMark").textContent = isFlagged(queue[0]) ? "Unflag" : "Review";
+  paintFace("", queue[0], queue.length, flipped);
+}
+
+/* ---- events ---- */
+$("plate").addEventListener("click", function(){ flipped = !flipped; render(); });
+$("rplate").addEventListener("click", function(){ rFlipped = !rFlipped; render(); });
 document.addEventListener("keydown", function(e){
   if(e.target && /input|textarea/i.test(e.target.tagName)) return;
-  if(e.key === " " || e.key === "Enter"){ e.preventDefault(); flip(); }
-  else if(e.key === "ArrowRight"){ e.preventDefault(); gotIt(); }
-  else if(e.key === "ArrowLeft"){ e.preventDefault(); again(); }
+  var rev = (view === "review" && inRev);
+  if(e.key === " " || e.key === "Enter"){
+    e.preventDefault();
+    if(rev) rFlipped = !rFlipped; else flipped = !flipped;
+    render();
+  } else if(e.key === "ArrowRight"){ e.preventDefault(); rev ? rClear() : gotIt(); }
+  else if(e.key === "ArrowLeft"){ e.preventDefault(); rev ? rGoBack() : goBack(); }
+  else if(e.key === "r" || e.key === "R"){ e.preventDefault(); if(!rev) toggleMark(); }
 });
 
 buildCards(); buildQueue(false); render();
