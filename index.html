@@ -92,7 +92,31 @@
          padding:8px 20px;overflow-y:auto;-webkit-overflow-scrolling:touch}
   .fbody.left{align-items:stretch;flex-direction:column;justify-content:center;
               gap:11px;padding:8px 18px}
-  .ffoot{border-top:1px solid #EDEEF0;padding:11px;text-align:center}
+  .ffoot{border-top:1px solid #EDEEF0;padding:11px;text-align:center;position:relative}
+  .hbtns{display:flex;gap:6px;flex:0 0 auto;margin-top:-3px}
+  .spk,.mic{width:32px;height:32px;border-radius:99px;border:1px solid var(--edge);
+       background:#fff;font-size:14px;line-height:1;display:flex;align-items:center;
+       justify-content:center;flex:0 0 auto}
+  .spk:active,.mic:active{background:#EDEEF0}
+  .spk.busy{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .mic.rec{background:#C8324B;border-color:#C8324B;color:#fff;animation:pulse 1s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+  .hleft{min-width:0;flex:1}
+  .pron{margin-top:8px;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.45;
+        border:1px solid var(--edge);background:#fff;display:none}
+  .pron b{font-weight:600}
+  .pron.good{background:var(--das-f);border-color:var(--das-e);color:var(--das-i)}
+  .pron.close{background:var(--flagf);border-color:var(--flage);color:#7A5410}
+  .pron.bad{background:var(--die-f);border-color:var(--die-e);color:var(--die-i)}
+  .heard{font-style:italic;opacity:.85}
+  .spkex{flex:0 0 auto;width:28px;height:28px;border-radius:99px;border:1px solid;
+         background:rgba(255,255,255,.7);font-size:13px;line-height:1;
+         display:flex;align-items:center;justify-content:center}
+  .exrow{display:flex;align-items:center;gap:8px}
+  .exrow .ex{flex:1;min-width:0}
+  .vsel{width:100%;font:inherit;font-size:13px;padding:8px 10px;border-radius:8px;
+        border:1px solid var(--edge);background:#fff;color:var(--ink);
+        -webkit-appearance:none;appearance:none}
   .word{text-align:center;font-weight:600;line-height:1.05;letter-spacing:-.02em}
   .star{color:var(--flag)}
 
@@ -251,8 +275,12 @@
         <div class="plate" id="plate" role="button" tabindex="0" aria-label="Flip card">
           <div class="face front">
             <div class="fhead">
-              <span class="eyebrow mono" id="fLang"></span>
-              <span class="eyebrow mono" id="fLeft"></span>
+              <span class="hleft"><span class="eyebrow mono" id="fLang"></span>
+                <span class="eyebrow mono" id="fLeft"></span></span>
+              <span class="hbtns">
+                <button class="spk" id="fSpk" aria-label="Say it" onclick="sayWord(event,'')">&#128266;</button>
+                <button class="mic" id="fMic" aria-label="Check my pronunciation" onclick="listen(event,'')">&#127908;</button>
+              </span>
             </div>
             <div class="fbody"><div class="word" id="fWord"></div></div>
             <div class="ffoot"><span class="eyebrow mono">Tap to reveal</span></div>
@@ -260,8 +288,12 @@
           <div class="face back" id="back">
             <div class="ghost" id="ghost" aria-hidden="true"></div>
             <div class="fhead">
-              <span class="eyebrow mono" id="bGen"></span>
-              <span class="eyebrow mono" id="bCat"></span>
+              <span class="hleft"><span class="eyebrow mono" id="bGen"></span>
+                <span class="eyebrow mono" id="bCat"></span></span>
+              <span class="hbtns">
+                <button class="spk" id="bSpk" aria-label="Say it" onclick="sayWord(event,'')">&#128266;</button>
+                <button class="mic" id="bMic" aria-label="Check my pronunciation" onclick="listen(event,'')">&#127908;</button>
+              </span>
             </div>
             <div class="fbody left">
               <div>
@@ -270,13 +302,16 @@
               </div>
               <div class="data mono" id="bData"></div>
               <div class="links" id="bLinks"></div>
-              <div class="ex" id="bEx"></div>
+              <div class="exrow" id="bExRow"><div class="ex" id="bEx"></div>
+                <button class="spkex" id="bSpkEx" aria-label="Say the sentence"
+                        onclick="sayEx(event,'')">&#128266;</button></div>
             </div>
             <div class="ffoot" id="bFoot"><span class="eyebrow mono">Tap to hide</span></div>
           </div>
         </div>
       </div>
 
+      <div class="pron" id="pron"></div>
       <div class="acts">
         <button class="act back" id="btnBack" onclick="goBack()">Back<i>&larr;</i></button>
         <button class="act mark" id="btnMark" onclick="toggleMark()" aria-pressed="false">Review</button>
@@ -285,6 +320,7 @@
 
       <div class="foot">
         <label class="chk"><input type="checkbox" id="shuf" onchange="setShuffle(this.checked)">Shuffle</label>
+        <label class="chk" id="autoWrap"><input type="checkbox" id="auto" onchange="setAuto(this.checked)">Auto-play</label>
         <button class="reset mono" onclick="restart()">Start over</button>
       </div>
     </div>
@@ -311,8 +347,12 @@
         <div class="plate" id="rplate" role="button" tabindex="0" aria-label="Flip card">
           <div class="face front">
             <div class="fhead">
-              <span class="eyebrow mono" id="rfLang"></span>
-              <span class="eyebrow mono" id="rfLeft"></span>
+              <span class="hleft"><span class="eyebrow mono" id="rfLang"></span>
+                <span class="eyebrow mono" id="rfLeft"></span></span>
+              <span class="hbtns">
+                <button class="spk" id="rfSpk" aria-label="Say it" onclick="sayWord(event,'r')">&#128266;</button>
+                <button class="mic" id="rfMic" aria-label="Check my pronunciation" onclick="listen(event,'r')">&#127908;</button>
+              </span>
             </div>
             <div class="fbody"><div class="word" id="rfWord"></div></div>
             <div class="ffoot"><span class="eyebrow mono">Tap to reveal</span></div>
@@ -320,8 +360,12 @@
           <div class="face back" id="rback">
             <div class="ghost" id="rghost" aria-hidden="true"></div>
             <div class="fhead">
-              <span class="eyebrow mono" id="rbGen"></span>
-              <span class="eyebrow mono" id="rbCat"></span>
+              <span class="hleft"><span class="eyebrow mono" id="rbGen"></span>
+                <span class="eyebrow mono" id="rbCat"></span></span>
+              <span class="hbtns">
+                <button class="spk" id="rbSpk" aria-label="Say it" onclick="sayWord(event,'r')">&#128266;</button>
+                <button class="mic" id="rbMic" aria-label="Check my pronunciation" onclick="listen(event,'r')">&#127908;</button>
+              </span>
             </div>
             <div class="fbody left">
               <div>
@@ -330,12 +374,15 @@
               </div>
               <div class="data mono" id="rbData"></div>
               <div class="links" id="rbLinks"></div>
-              <div class="ex" id="rbEx"></div>
+              <div class="exrow" id="rbExRow"><div class="ex" id="rbEx"></div>
+                <button class="spkex" id="rbSpkEx" aria-label="Say the sentence"
+                        onclick="sayEx(event,'r')">&#128266;</button></div>
             </div>
             <div class="ffoot" id="rbFoot"><span class="eyebrow mono">Tap to hide</span></div>
           </div>
         </div>
       </div>
+      <div class="pron" id="rpron"></div>
       <div class="acts">
         <button class="act back" id="rBtnBack" onclick="rGoBack()">Back<i>&larr;</i></button>
         <button class="act mark" onclick="rKeep()">Keep flagged</button>
@@ -377,7 +424,13 @@
       review lists are tracked separately &middot; progress saves automatically.
       Search jumps straight to a card &middot; person nouns show the feminine form in a pink capsule
       &middot; tap a <b>syn</b> or <b>opp</b> chip to jump to that word.
-      With a keyboard: Space flips, &rarr; Got it, &larr; Back, R flags.</p>
+      Tap &#128266; to hear the word (the article is spoken too, so you hear the gender).
+      If it sounds English, pick a German voice below.
+      Tap &#127908; to say the word yourself and get a match score.
+      With a keyboard: Space flips, &rarr; Got it, &larr; Back, R flags, S speaks.</p>
+    <div id="voicebox" style="margin-top:10px;border:1px solid var(--edge);
+         background:#F6F7F8;border-radius:8px;padding:10px 12px;font-size:12px;
+         line-height:1.5"></div>
     <div id="warn">Progress can&rsquo;t be saved in this mode. Open the file from a
       home&nbsp;screen icon or a web address instead of a preview window.</div>
   </div>
@@ -404,6 +457,291 @@ function $(id){ return document.getElementById(id); }
 function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 function show(el,on){ if(on) el.classList.remove("hide"); else el.classList.add("hide"); }
 
+/* ---- speech ----------------------------------------------------------
+   iOS is fussy here. Two things go wrong if you are not careful:
+   1. the voice list is empty at load and fills in later, and
+   2. a voice object from an older getVoices() call is silently ignored,
+      so the system reads German text with its default English voice.
+   The fix is to re-fetch the list at the moment of speaking and resolve
+   the voice by name every time. ------------------------------------- */
+var TTS = (typeof window !== "undefined" && "speechSynthesis" in window);
+var deVoice = null, deVoices = [];
+
+function allVoices(){
+  if(!TTS) return [];
+  try { return window.speechSynthesis.getVoices() || []; } catch(e){ return []; }
+}
+function isDE(v){
+  return ((v.lang || "").toLowerCase().replace("_","-")).indexOf("de") === 0;
+}
+function vscore(v){
+  var l = (v.lang || "").toLowerCase().replace("_","-");
+  return (l.indexOf("de-de") === 0 ? 4 : 0) + (v.localService ? 2 : 0)
+       + (/anna|helena|markus|petra|katrin|yannick/i.test(v.name || "") ? 1 : 0);
+}
+function pickVoice(){
+  if(!TTS) return;
+  deVoices = allVoices().filter(isDE);
+  deVoices.sort(function(a,b){ return vscore(b) - vscore(a); });
+  var want = (typeof S !== "undefined" && S) ? S.voice : "";
+  var found = null;
+  for(var i=0;i<deVoices.length;i++) if(deVoices[i].name === want) found = deVoices[i];
+  deVoice = found || deVoices[0] || null;
+}
+function refreshVoices(){
+  pickVoice();
+  if(typeof render === "function" && document.getElementById("voicebox")) render();
+}
+if(TTS){
+  pickVoice();
+  try { window.speechSynthesis.onvoiceschanged = refreshVoices; } catch(e){}
+  setTimeout(refreshVoices, 400);
+  setTimeout(refreshVoices, 1500);
+}
+function setVoice(name){
+  S.voice = name; save(); pickVoice(); render();
+  var c = curCard(view === "review" && inRev ? "r" : "");
+  if(c) speak(saySrc(c), null);          /* let the user hear the change at once */
+}
+
+var spkBtn = null;
+function speak(text, btn){
+  if(!TTS || !text) return;
+  /* resolve the voice against a FRESH list every time */
+  pickVoice();
+  var syn = window.speechSynthesis;
+  var go = function(){
+    try {
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = deVoice ? deVoice.lang : "de-DE";
+      if(deVoice) u.voice = deVoice;     /* assign last: some engines let voice win */
+      u.rate = 0.88;
+      if(btn){
+        if(spkBtn) spkBtn.classList.remove("busy");
+        spkBtn = btn; btn.classList.add("busy");
+        u.onend = u.onerror = function(){ btn.classList.remove("busy"); };
+      }
+      syn.speak(u);
+    } catch(e){}
+  };
+  try {
+    /* cancel() immediately before speak() can swallow the utterance on iOS */
+    if(syn.speaking || syn.pending){ syn.cancel(); setTimeout(go, 70); }
+    else go();
+  } catch(e){ go(); }
+}
+/* The article is spoken with the noun, so gender is heard as well as seen. */
+function saySrc(c){ return c ? ((c.a && c.a.indexOf("/") < 0 ? c.a + " " : "") + c.w) : ""; }
+function curCard(p){ return p === "r" ? rQueue[0] : queue[0]; }
+function sayWord(ev, p){
+  if(ev){ ev.stopPropagation(); ev.preventDefault(); }
+  var c = curCard(p);
+  if(c) speak(saySrc(c), ev && ev.currentTarget);
+}
+function sayEx(ev, p){
+  if(ev){ ev.stopPropagation(); ev.preventDefault(); }
+  var c = curCard(p);
+  if(c && c.s) speak(c.s, ev && ev.currentTarget);
+}
+/* ---- pronunciation check -------------------------------------------
+   Uses the browser's speech recognition. Compares what it heard against
+   the target with a similarity score, so near-misses read as "close"
+   rather than a flat fail. --------------------------------------------- */
+var SR = (typeof window !== "undefined") &&
+         (window.SpeechRecognition || window.webkitSpeechRecognition);
+var rec = null, recBtn = null, recP = "";
+/* Standalone = launched from a home screen icon. iOS has historically denied
+   microphone access in that mode, so if the mic fails there we say so
+   specifically rather than blaming the browser in general. */
+var STANDALONE = !!(typeof window !== "undefined" && (
+  window.navigator.standalone === true ||
+  (typeof window.matchMedia === "function" &&
+   window.matchMedia("(display-mode: standalone)").matches === true)));
+var IOS = !!(typeof navigator !== "undefined" &&
+  (/iPad|iPhone|iPod/.test(navigator.userAgent || "") ||
+   (/Mac/.test(navigator.platform || "") && navigator.maxTouchPoints > 1)));
+/* Newer Chrome can run recognition on-device, which makes it work offline. */
+var onDevice = false;
+if(SR && SR.available){
+  try {
+    Promise.resolve(SR.available({ langs: ["de-DE"], processLocally: true }))
+      .then(function(a){ onDevice = (a === "available"); })
+      .catch(function(){});
+  } catch(e){}
+}
+
+function nrm(s){
+  return String(s).toLowerCase()
+    .replace(/\u00df/g,"ss")
+    .replace(/[\u00e4]/g,"a").replace(/[\u00f6]/g,"o").replace(/[\u00fc]/g,"u")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/[^a-z0-9 ]/g,"").replace(/\s+/g," ").trim();
+}
+function lev(a,b){
+  var m=a.length, n2=b.length, i, j, prev=[], cur=[];
+  if(!m) return n2; if(!n2) return m;
+  for(j=0;j<=n2;j++) prev[j]=j;
+  for(i=1;i<=m;i++){
+    cur[0]=i;
+    for(j=1;j<=n2;j++){
+      cur[j] = Math.min(prev[j]+1, cur[j-1]+1,
+                        prev[j-1] + (a.charAt(i-1)===b.charAt(j-1) ? 0 : 1));
+    }
+    prev = cur.slice();
+  }
+  return prev[n2];
+}
+function sim(a,b){
+  a = nrm(a); b = nrm(b);
+  if(!a || !b) return 0;
+  if(a === b) return 1;
+  var L = Math.max(a.length, b.length);
+  return 1 - (lev(a,b) / L);
+}
+function pronBox(p){ return $(p === "r" ? "rpron" : "pron"); }
+function showPron(p, cls, html){
+  var el = pronBox(p);
+  el.className = "pron" + (cls ? " " + cls : "");
+  el.innerHTML = html;
+  el.style.display = "block";
+}
+function clearPron(){
+  var a = $("pron"), b = $("rpron");
+  if(a){ a.style.display = "none"; }
+  if(b){ b.style.display = "none"; }
+}
+function stopRec(){
+  if(rec){ try { rec.stop(); } catch(e){} }
+  if(recBtn){ recBtn.classList.remove("rec"); recBtn = null; }
+}
+function listen(ev, p){
+  if(ev){ ev.stopPropagation(); ev.preventDefault(); }
+  if(!SR){
+    showPron(p, "bad", "<b>This browser can\u2019t do speech recognition.</b> "
+      + "It works in Chrome, Edge, Safari, Opera and Samsung Internet. "
+      + "Firefox has it switched off by default \u2014 enable "
+      + "<b>dom.webspeech.recognition.enable</b> in <b>about:config</b>, or use "
+      + "another browser.");
+    return;
+  }
+  var c = curCard(p);
+  if(!c) return;
+  if(recBtn){ stopRec(); return; }              /* second tap cancels */
+  var btn = ev && ev.currentTarget;
+  var target = c.w, full = saySrc(c);
+
+  try { rec = new SR(); } catch(e){ rec = null; }
+  if(!rec){ showPron(p, "bad", "Could not start the microphone."); return; }
+  rec.lang = "de-DE";
+  rec.interimResults = false;
+  rec.maxAlternatives = 5;
+  rec.continuous = false;
+  if(onDevice){ try { rec.processLocally = true; } catch(e){} }
+  recBtn = btn; recP = p;
+  if(btn) btn.classList.add("rec");
+  showPron(p, "", "<b>Listening\u2026</b> say <b>" + esc(full) + "</b> "
+                + "\u2014 tap the mic again to stop.");
+
+  rec.onresult = function(e){
+    var best = 0, heard = "";
+    for(var i=0;i<e.results[0].length;i++){
+      var alt = e.results[0][i].transcript;
+      var s = Math.max(sim(alt, target), sim(alt, full));
+      if(s > best){ best = s; heard = alt; }
+      if(!heard) heard = alt;
+    }
+    var pct = Math.round(best * 100);
+    var say = '<div class="heard">heard: \u201c' + esc(heard.trim()) + '\u201d</div>';
+    if(best >= 0.85){
+      showPron(recP, "good", "<b>That\u2019s it \u2014 " + pct + "% match.</b>" + say);
+    } else if(best >= 0.6){
+      showPron(recP, "close", "<b>Close \u2014 " + pct + "% match.</b> Tap "
+        + "&#128266; to hear it again, then retry." + say);
+    } else {
+      showPron(recP, "bad", "<b>Not quite \u2014 " + pct + "% match.</b> Target: <b>"
+        + esc(target) + "</b>." + say);
+    }
+    stopRec();
+  };
+  rec.onerror = function(e){
+    var k = e && e.error, msg;
+    if(k === "not-allowed" || k === "service-not-allowed"){
+      msg = "<b>Microphone blocked.</b> ";
+      if(STANDALONE && IOS){
+        msg += "iOS often refuses the microphone to home&nbsp;screen apps. "
+             + "Open the same address in Safari and try there.";
+      } else if(IOS){
+        msg += "Tap <b>aA</b> in the address bar \u2192 <b>Website Settings</b> "
+             + "\u2192 allow <b>Microphone</b>, then retry.";
+      } else {
+        msg += "Allow microphone access for this site in your browser\u2019s "
+             + "address-bar permission icon, then retry.";
+      }
+    } else if(k === "no-speech"){
+      msg = "<b>Didn\u2019t hear anything.</b> Tap the mic and speak right away.";
+    } else if(k === "network" || k === "service-not-available"){
+      msg = "<b>Recognition service unreachable.</b> Most browsers send the audio "
+          + "off to be transcribed, so this part needs a connection. "
+          + "The speaker button still works offline.";
+    } else {
+      msg = "<b>Could not listen</b>" + (k ? " (" + esc(k) + ")" : "") + ".";
+    }
+    showPron(recP, "bad", msg);
+    stopRec();
+  };
+  rec.onend = function(){ stopRec(); };
+  try { rec.start(); }
+  catch(e){ showPron(p, "bad", "Could not start the microphone."); stopRec(); }
+}
+
+function micHTML(){
+  if(!SR){
+    return '&#127908; <b>Pronunciation check unavailable here.</b> '
+         + 'Works in Chrome, Edge, Safari, Opera and Samsung Internet, on any device. '
+         + 'Firefox keeps it behind the <b>dom.webspeech.recognition.enable</b> flag.';
+  }
+  var h = '&#127908; <b>Pronunciation check ready.</b> ';
+  h += onDevice ? 'Your browser can transcribe on-device, so this works offline. '
+                : 'Audio is sent away to be transcribed, so it needs a connection. ';
+  if(STANDALONE && IOS){
+    h += '<br><b>Note:</b> you opened this from the home&nbsp;screen icon. iOS often '
+       + 'blocks the microphone in that mode \u2014 if the mic fails, open the same '
+       + 'address in Safari.';
+  }
+  return h;
+}
+
+function voiceHTML(){
+  if(!TTS){
+    return '<b>No speech support.</b> This browser cannot speak text. '
+         + 'Open the app in Safari or Chrome.';
+  }
+  if(!deVoices.length){
+    var total = allVoices().length;
+    return '<b>No German voice on this device</b>'
+      + (total ? ' (' + total + ' other voices found).' : '.')
+      + ' Without one, iOS reads German with an English accent.<br>'
+      + 'Add one: <b>Settings &rsaquo; Accessibility &rsaquo; Spoken Content &rsaquo; '
+      + 'Voices &rsaquo; German</b> \u2192 pick <b>Anna</b> or <b>Helena</b>, wait for the '
+      + 'download, then reload this page.';
+  }
+  var h = '<label style="display:block;margin-bottom:6px">German voice ('
+        + deVoices.length + ' available)</label><select class="vsel" '
+        + 'onchange="setVoice(this.value)">';
+  for(var i=0;i<deVoices.length;i++){
+    var v = deVoices[i];
+    h += '<option value="'+esc(v.name)+'"'
+       + (deVoice && v.name === deVoice.name ? ' selected' : '') + '>'
+       + esc(v.name) + ' \u00b7 ' + esc(v.lang)
+       + (v.localService ? '' : ' (online)') + '</option>';
+  }
+  h += '</select><div style="margin-top:6px;opacity:.75">Tap a voice to hear it. '
+     + 'Prefer a <b>de-DE</b> voice; the download makes it work offline.</div>';
+  h += '<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--edge);opacity:.85">'
+     + micHTML() + '</div>';
+  return h;
+}
+
 /* ---- storage ---- */
 var KEY = "vk.a1.v2", mem = {}, canStore = false;
 try { localStorage.setItem(KEY+".t","1"); localStorage.removeItem(KEY+".t"); canStore = true; }
@@ -419,8 +757,11 @@ if(!S.review)  S.review  = {};   /* "deck"     -> ["cat::word"] */
 if(!S.deck) S.deck = "de2en";
 if(!S.cat)  S.cat  = CATS[0].id;
 if(typeof S.shuffle !== "boolean") S.shuffle = false;
+if(typeof S.auto !== "boolean") S.auto = false;
+if(typeof S.voice !== "string") S.voice = "";
 
 var deck = S.deck, cat = S.cat, shuffle = S.shuffle, view = "study";
+var auto = S.auto;
 var cards = [], queue = [], hist = [], flipped = false;
 var rQueue = [], rHist = [], rFlipped = false, rTotal = 0, inRev = false;
 var query = "", jumpKey = null;
@@ -524,6 +865,7 @@ function buildQueue(fresh){
 
 /* ---- study actions ---- */
 function gotIt(){
+  stopRec(); clearPron();
   if(!queue.length) return;
   var c = queue.shift();
   setLearned(c, true);
@@ -533,6 +875,7 @@ function gotIt(){
 /* Toggle the flag on the CURRENT card and move on. Toggling off just unflags,
    keeping you on the same card. */
 function toggleMark(){
+  stopRec(); clearPron();
   if(!queue.length) return;
   var c = queue[0];
   if(isFlagged(c)){ setFlagged(c,false); render(); return; }
@@ -543,6 +886,7 @@ function toggleMark(){
 }
 /* Step back to the exact card you just left, and undo what you did to it. */
 function goBack(){
+  stopRec(); clearPron();
   if(!hist.length) return;
   var h = hist.pop();
   if(h.a === "got") setLearned(h.c, false);
@@ -575,6 +919,7 @@ function startRevSession(){
 }
 function endRevSession(){ inRev = false; render(); window.scrollTo(0,0); }
 function rClear(){                       /* Got it -> drop the flag */
+  stopRec(); clearPron();
   if(!rQueue.length) return;
   var c = rQueue.shift();
   setFlagged(c, false);
@@ -582,12 +927,14 @@ function rClear(){                       /* Got it -> drop the flag */
   rFlipped = false; render();
 }
 function rKeep(){                        /* stay flagged, move on */
+  stopRec(); clearPron();
   if(!rQueue.length) return;
   var c = rQueue.shift();
   rHist.push({ c:c, cleared:false });
   rFlipped = false; render();
 }
 function rGoBack(){
+  stopRec(); clearPron();
   if(!rHist.length) return;
   var h = rHist.pop();
   if(h.cleared) setFlagged(h.c, true);
@@ -763,6 +1110,7 @@ function setDeck(d){
   deck = S.deck = d; save();
   buildCards(); buildQueue(false); inRev = false; render();
 }
+function setAuto(v){ auto = S.auto = v; save(); }
 function setShuffle(v){
   shuffle = S.shuffle = v; save();
   buildQueue(false); render();
@@ -847,9 +1195,16 @@ function paintFace(p, c, left, flip){
   lw.innerHTML = lh;
   lw.style.display = lh ? "flex" : "none";
 
-  var ex = $(p+"bEx");
-  if(!deDeck && c.s){ ex.textContent = c.s; ex.style.display = "block"; }
-  else ex.style.display = "none";
+  var ex = $(p+"bEx"), exr = $(p+"bExRow");
+  if(!deDeck && c.s){ ex.textContent = c.s; exr.style.display = "flex"; }
+  else exr.style.display = "none";
+  var sx = $(p+"bSpkEx");
+  sx.style.borderColor = gm.e; sx.style.color = gm.i;
+  /* the front controls only make sense when the front side is the German one */
+  $(p+"fSpk").style.display = (TTS && deDeck) ? "flex" : "none";
+  $(p+"bSpk").style.display = TTS ? "flex" : "none";
+  $(p+"fMic").style.display = (SR && deDeck) ? "flex" : "none";
+  $(p+"bMic").style.display = SR ? "flex" : "none";
 
   var pl = $(p === "" ? "plate" : "rplate");
   if(flip) pl.classList.add("turned"); else pl.classList.remove("turned");
@@ -916,6 +1271,8 @@ function render(){
   }
   if(view === "search" && !$("hits").innerHTML) $("hits").innerHTML = hitsHTML();
   $("warn").style.display = canStore ? "none" : "block";
+  $("voicebox").innerHTML = voiceHTML();
+  show($("voicebox"), true);
 
   if(view === "review"){
     show($("revList"), !inRev);
@@ -969,6 +1326,8 @@ function render(){
   $("cnt").textContent = learned + "/" + pool + " gelernt"
                        + (nFlagCat ? " \u00b7 " + nFlagCat + " markiert" : "");
   $("shuf").checked = shuffle;
+  $("auto").checked = auto;
+  show($("autoWrap"), TTS);
 
   var isDone = queue.length === 0;
   show($("live"), !isDone);
@@ -988,8 +1347,14 @@ function render(){
 }
 
 /* ---- events ---- */
-$("plate").addEventListener("click", function(){ flipped = !flipped; render(); });
-$("rplate").addEventListener("click", function(){ rFlipped = !rFlipped; render(); });
+$("plate").addEventListener("click", function(){
+  flipped = !flipped; render();
+  if(flipped && auto) sayWord(null, "");
+});
+$("rplate").addEventListener("click", function(){
+  rFlipped = !rFlipped; render();
+  if(rFlipped && auto) sayWord(null, "r");
+});
 document.addEventListener("keydown", function(e){
   if(e.target && /input|textarea/i.test(e.target.tagName)) return;
   if(view === "search") return;
@@ -1001,6 +1366,13 @@ document.addEventListener("keydown", function(e){
   } else if(e.key === "ArrowRight"){ e.preventDefault(); rev ? rClear() : gotIt(); }
   else if(e.key === "ArrowLeft"){ e.preventDefault(); rev ? rGoBack() : goBack(); }
   else if(e.key === "r" || e.key === "R"){ e.preventDefault(); if(!rev) toggleMark(); }
+  else if(e.key === "s" || e.key === "S"){ e.preventDefault(); sayWord(null, rev ? "r" : ""); }
+  else if(e.key === "m" || e.key === "M"){
+    e.preventDefault();
+    var p = rev ? "r" : "";
+    var b = $(p + (rev ? (rFlipped ? "bMic" : "fMic") : (flipped ? "bMic" : "fMic")));
+    if(b) b.click();
+  }
 });
 
 buildCards(); buildQueue(false); render();
